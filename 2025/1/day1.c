@@ -49,6 +49,8 @@ cmd_t* load_input() {
 		}
 	}
 
+	fclose(input_file);
+
 	return first;
 }
 
@@ -76,6 +78,7 @@ unsigned int turn_dial(unsigned int dial, Direction dir) {
 
 int main() {
 	cmd_t* input = load_input();
+	cmd_t* first = input;
 
 	unsigned int dial = 50;
 	unsigned int zero_count = 0;
@@ -91,8 +94,27 @@ int main() {
 
 		cmd_t* old = input;
 		input = input->next;
+	}
+
+	printf("part 1: %d\n", zero_count);
+
+	input = first; 
+	dial = 50;
+	zero_count = 0;
+
+	while (input != NULL) {
+		for (int i = 0; i < input->magnitude; i++) {
+			dial = turn_dial(dial, input->dir);
+
+			if (dial == 0) {
+				zero_count++;
+			}
+		}
+
+		cmd_t* old = input;
+		input = input->next;
 		free(old);
 	}
 
-	printf("%d\n", zero_count);
+	printf("part 2: %d\n", zero_count);
 }
