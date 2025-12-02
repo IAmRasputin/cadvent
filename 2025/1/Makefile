@@ -4,6 +4,8 @@ day1: day1.c
 debug:
 	gcc -c -ggdb day1.c
 	gcc -o day1 *.o -ggdb
+	rm *.o
 
 clean:
-	rm day1
+	rm -f day1
+	rm -f *.o

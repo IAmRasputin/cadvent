@@ -1,30 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum {
+enum Direction {
 	LEFT,
 	RIGHT
-} Direction;
+};
 
-typedef struct instruction {
-	Direction dir;
+struct cmd {
+	enum Direction dir;
 	int magnitude;
-	struct instruction* next;
-} cmd_t;
+	struct cmd* next;
+};
 
-cmd_t* load_input() {
+struct cmd* load_input() 
+{
 	FILE* input_file = fopen("input", "r");
 
 	if (input_file == NULL) {
 		return NULL;
 	}
 
-	cmd_t* first;
-	cmd_t* inst = NULL;
+	struct cmd* first;
+	struct cmd* inst = NULL;
+	size_t size = sizeof(struct cmd);
 	char line[8];
 
 	while (fgets(line, 8, input_file) != NULL) {
-		cmd_t* new_inst = (cmd_t*) malloc(sizeof(cmd_t));
+		struct cmd* new_inst = (struct cmd*) malloc(sizeof(struct cmd));
 
 		switch (line[0]) {
 			case 'R':
@@ -54,7 +56,8 @@ cmd_t* load_input() {
 	return first;
 }
 
-unsigned int turn_dial(unsigned int dial, Direction dir) {
+unsigned int turn_dial(unsigned int dial, enum Direction dir) 
+{
 	switch (dir) {
 		case LEFT:
 			if (dial == 0) {
@@ -76,9 +79,10 @@ unsigned int turn_dial(unsigned int dial, Direction dir) {
 	}
 }
 
-int main() {
-	cmd_t* input = load_input();
-	cmd_t* first = input;
+int main() 
+{
+	struct cmd* input = load_input();
+	struct cmd* first = input;
 
 	unsigned int dial = 50;
 	unsigned int zero_count = 0;
@@ -92,7 +96,7 @@ int main() {
 			zero_count++;
 		}
 
-		cmd_t* old = input;
+		struct cmd* old = input;
 		input = input->next;
 	}
 
@@ -111,7 +115,7 @@ int main() {
 			}
 		}
 
-		cmd_t* old = input;
+		struct cmd* old = input;
 		input = input->next;
 		free(old);
 	}
