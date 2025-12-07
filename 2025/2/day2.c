@@ -72,7 +72,10 @@ struct range* get_range(struct id* input)
 {
 	struct range* out = (struct range*) malloc(sizeof(struct range));
 
-	char * low = strtok(input->value, "-");
+	char sacrifice[(sizeof(input->value) / sizeof(char)) + 1];
+	strcpy(sacrifice, input->value);
+
+	char * low = strtok(sacrifice, "-");
 	char * high = strtok(NULL, "-");
 
 	out->start = atol(low);
@@ -106,13 +109,34 @@ int is_valid(char* in)
 
 int repeats(char* in, int div)
 {
-	// TODO
-	return 0;
+	char example[div + 1];
+	example[div] = '\0';
+
+	for (int i = 0; i < div; i++) {
+		example[i] = in[i];
+	}
+
+	for (int i = div; i < strlen(in); i += div) {
+		char comp[div + 1];
+
+		for (int j = 0; j < i + div; j++) {
+			comp[j] = in[i + j];
+		}
+
+		comp[div] = '\0';
+
+		if (strcmp(comp, example) != 0) {
+			return 0;
+		}
+	}
+
+	return 1;
 }
 
 int is_valid_2(char* in)
 {
 	size_t in_length = strlen(in);
+
 	if (in_length > 1) {
 		for (int i = 1; i <= in_length/2; i++) {
 			if (in_length % i == 0 && repeats(in, i)) {
@@ -145,17 +169,33 @@ int main(void)
 		}
 
 
-		struct id* old = input;
 		input = input->next;
 		free(r);
-		//free(old);
 	}
 
 	printf("Part 1: %ld\n", sum_invalid);
 
 	input = backup;
+	sum_invalid = 0;
+
+	while (input != NULL) {
+		struct range* r = get_range(input);
+		for (long i = r->start; i <= r->end; i++) {
+			char* str = to_string(i);
+
+			if (!is_valid_2(str)) {
+				sum_invalid += i;
+			}
+
+			free(str);
+		}
 
 
+		struct id* old = input;
+		input = input->next;
+		free(r);
+		free(old);
+	}
 
-
+	printf("Part 2: %ld\n", sum_invalid);
 }
